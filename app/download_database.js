@@ -4,7 +4,7 @@ var public_access_token = "LS0iFJNU2dHBEdxTrT3bOJZhujTOVPvo"
 
 var dataArray = [];
 
-var publicRepository = await getDeckCards_byName(public_access_token,"production",true);
+var publicRepository = await getDeckCards_byName(public_access_token,"staging",true);
 dataArray = publicRepository.cards;
 
 /// Split the arrayData into seperate arrays helpful for our situation. Namely Razors and links.
@@ -64,11 +64,19 @@ var linkages = data_links.map(link => ({
     source:link.uuid1,
     target:link.uuid2
 }))
-var correlations = data_correlations.map(link => ({
-    source:link.uuid1,
-    target:link.uuid2
-}))
-links = linkages.concat(correlations)
+var weightedConnections = []
+var correlations = []
+data_correlations.forEach(link => {
+    correlations.push({
+        source:link.uuid1,
+        target:link.uuid2,
+    })
+    weightedConnections.push({
+        source:link.uuid_weightedRazor,
+        target:link.uuid1,
+    })
+})
+links = linkages.concat(correlations).concat(weightedConnections)
 
 var result = {
     nodes:nodes,

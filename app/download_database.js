@@ -55,15 +55,30 @@ data_links = removeDuplicates(data_links,["uuid1","uuid2"]);
 data_correlations = removeDuplicates(data_correlations,["uuid1","uuid2","uuid_weightedRazor","linkWeight"]);
 var nodes = []
 var links = []
-var razors = data_razors.map(razor => ({
+nodes = data_razors.map(razor => ({
     id:razor.razorID,
     name:razor.razor
 }))
-nodes = razors
-var linkages = data_links.map(link => ({
-    source:link.uuid1,
-    target:link.uuid2
-}))
+// nodes.push({
+//     id:"index",
+//     name:"EDRX"
+// })
+
+var ids = nodes.map(node => node.id)
+var linkages = []
+var originConnections = []
+data_links.forEach(link => {
+    linkages.push({
+        source:link.uuid1,
+        target:link.uuid2
+    })
+    // if(!originConnections.map(con => con.target).includes(link.uuid2)) {
+    //     originConnections.push({
+    //         source:"index",
+    //         target:link.uuid2
+    //     })
+    // }
+})
 var weightedConnections = []
 var correlations = []
 data_correlations.forEach(link => {
@@ -76,7 +91,8 @@ data_correlations.forEach(link => {
         target:link.uuid1,
     })
 })
-links = linkages.concat(correlations).concat(weightedConnections)
+links = linkages.concat(correlations).concat(weightedConnections).concat(originConnections)
+links = links.filter(link => ids.includes(link.source) && ids.includes(link.target))
 
 var result = {
     nodes:nodes,
